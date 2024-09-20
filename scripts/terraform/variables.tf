@@ -5,7 +5,7 @@ variable "app_name" {
 }
 
 variable "container_registry" {
-  default = "s224169428Kube"
+  default = "s224169428kube"
 }
 
 variable "aws_region" {
