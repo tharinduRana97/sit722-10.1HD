@@ -1,0 +1,35 @@
+name: Deploy infrastructure
+
+on:
+  # Allows deployment to be invoked manually through the GitHub Actions user interface.
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository under $GITHUB_WORKSPACE.
+      - uses: actions/checkout@v3
+
+      # Configure AWS credentials using GitHub Secrets
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Change this to your desired AWS region
+
+      # Install Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      # Give execute permission to the infrastructure script
+      - name: Grant execute permission to infrastructure script
+        run: chmod +x ./scripts/infrastructure.sh
+
+      # Deploy infrastructure using the script
+      - name: Deploy Infrastructure
+        run: ./scripts/infrastructure.sh

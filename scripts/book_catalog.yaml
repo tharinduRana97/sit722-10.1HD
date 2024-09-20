@@ -1,0 +1,39 @@
+# Book Catalog Deployment with LoadBalancer Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog-deployment
+  labels:
+    app: book-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+        - name: book-catalog
+          image: $CONTAINER_REGISTRY/book_catalog:$VERSION
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://s224169428db_user:0ECup3QreyK0xcEy7ms6CYBflktTkyJC@dpg-crj80m2j1k6c73fk6ik0-a.oregon-postgres.render.com/s224169428db?sslmode=require"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: book-catalog
+  ports:
+    - port: 80
+      targetPort: 8000
+---
