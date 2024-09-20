@@ -1,16 +1,21 @@
+# Define the ECR repository name as a variable
+variable "container_registry" {
+  description = "The name of the ECR repository."
+  type        = string
+}
+
 # Lookup the existing ECR repository
 data "aws_ecr_repository" "existing" {
   name = var.container_registry
-  # Ignore errors if the repository does not exist
-  lifecycle {
-    ignore_errors = true
-  }
+
+  # Suppress errors if the repository does not exist
+  depends_on = [aws_ecr_repository.ecr]
 }
 
 # Create ECR repository only if it doesn't exist
 resource "aws_ecr_repository" "ecr" {
-  count                = data.aws_ecr_repository.existing.repository_uri == "" ? 1 : 0
-  name                 = var.container_registry
+  count = length([for repo in try(data.aws_ecr_repository.existing.repository_uri, []): repo]) == 0 ? 1 : 0
+  name  = var.container_registry
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
     scan_on_push = true
