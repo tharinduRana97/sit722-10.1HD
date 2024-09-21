@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: book-catalog
-          image: $CONTAINER_REGISTRY/book_catalog:$VERSION
+          image: $CONTAINER_REGISTRY-book_catalog:$VERSION
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
