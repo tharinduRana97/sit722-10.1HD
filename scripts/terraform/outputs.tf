@@ -1,38 +1,47 @@
 # outputs.tf
 
+# Output the EKS Cluster Name from the module
 output "eks_cluster_name" {
-  value = aws_eks_cluster.eks.name
-}
-
-# Output the repository URL for book_catalog
-output "book_catalog_repository_url" {
-  value = aws_ecr_repository.book_catalog.repository_url
-  description = "The URL of the book_catalog ECR repository"
-}
-
-# Output the repository URL for inventory_management
-output "inventory_management_repository_url" {
-  value = aws_ecr_repository.inventory_management.repository_url
-  description = "The URL of the inventory_management ECR repository"
-}
-output "vpc_id" {
-  value = aws_vpc.this.id
-}
-
-output "public_subnets" {
-  value = aws_subnet.public.*.id
-}
-
-output "private_subnets" {
-  value = aws_subnet.private.*.id
+  value = module.eks.cluster_id
+  description = "The name of the EKS cluster"
 }
 
 # Output the role ARNs for easy reference
 output "eks_cluster_role_arn" {
   value = aws_iam_role.eks_cluster_role.arn
+  description = "The ARN of the IAM role for the EKS cluster"
 }
 
 output "eks_node_group_role_arn" {
   value = aws_iam_role.eks_node_group_role.arn
+  description = "The ARN of the IAM role for the EKS node group"
 }
 
+# Output the repository URLs for ECR
+output "book_catalog_repository_url" {
+  value       = aws_ecr_repository.book_catalog.repository_url
+  description = "The URL of the book_catalog ECR repository"
+}
+
+output "inventory_management_repository_url" {
+  value       = aws_ecr_repository.inventory_management.repository_url
+  description = "The URL of the inventory_management ECR repository"
+}
+
+# Output the VPC ID
+output "vpc_id" {
+  value = module.vpc.vpc_id
+  description = "The ID of the VPC"
+}
+
+# Output the Public Subnets IDs
+output "public_subnets" {
+  value = module.vpc.public_subnets
+  description = "The IDs of the public subnets"
+}
+
+# Output the Private Subnets IDs
+output "private_subnets" {
+  value = module.vpc.private_subnets
+  description = "The IDs of the private subnets"
+}
