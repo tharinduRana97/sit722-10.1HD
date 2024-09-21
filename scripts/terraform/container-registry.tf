@@ -19,6 +19,6 @@ resource "aws_ecr_repository" "ecr" {
 }
 
 # Output the ECR repository URL, whether it is newly created or already existing
-output "ecr_repository_uri" {
+output "ecr_repository_url" {
   value = local.ecr_repository_exists ? data.aws_ecr_repository.existing.repository_url : aws_ecr_repository.ecr[0].repository_url
 }
