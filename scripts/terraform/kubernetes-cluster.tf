@@ -22,7 +22,7 @@ resource "aws_eks_cluster" "eks" {
 resource "aws_security_group" "eks_cluster_sg" {
   vpc_id = aws_vpc.vpc.id
 
-  # Allow inbound traffic from EKS Control Plane
+  # Allow inbound traffic from EKS Control Plane (port 443)
   ingress {
     from_port   = 443
     to_port     = 443
@@ -93,11 +93,7 @@ resource "aws_eks_node_group" "node_group" {
 
   instance_types = ["t3a.micro"]  # Change to your preferred instance type
 
-  # Attach the security group created for the nodes
-  remote_access {
-    ec2_ssh_key = var.ec2_ssh_key
-    source_security_group_ids = [aws_security_group.eks_node_sg.id]
-  }
+  # No remote access required for the node group
 
   depends_on = [
     aws_eks_cluster.eks,
