@@ -14,6 +14,11 @@ variable "kubernetes_version" {
   default = "1.24"   
 }
 
+variable "azs" {
+  description = "List of public subnet CIDR blocks"
+  default     = ["us-east-1a", "us-east-1b"]
+}
+
 variable "aws_availability_zone_1" {
   default = "us-east-1a"  # Replace with your preferred AZ
 }
@@ -30,4 +35,8 @@ variable "public_subnets" {
 variable "private_subnets" {
   description = "List of private subnet CIDR blocks"
   default     = ["10.123.3.0/24", "10.123.4.0/24"]
+}
+variable "vpc_cidr" {
+  description = "CIDR blocks"
+  default     = "10.123.0.0/16"]
 }
