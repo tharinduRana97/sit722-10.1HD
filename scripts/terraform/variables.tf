@@ -16,6 +16,10 @@ variable "kubernetes_version" {
   default = "1.24"   
 }
 
-variable "aws_availability_zone" {
-  default = "us-east-1a"
+variable "aws_availability_zone_1" {
+  default = "us-east-1a"  # Replace with your preferred AZ
+}
+
+variable "aws_availability_zone_2" {
+  default = "us-east-1b"  # Replace with your preferred AZ
 }
