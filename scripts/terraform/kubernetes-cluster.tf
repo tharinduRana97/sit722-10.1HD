@@ -1,12 +1,3 @@
-# Fetch the default security group for the VPC
-data "aws_security_group" "default" {
-  vpc_id = aws_vpc.vpc.id
-  filter {
-    name   = "group-name"
-    values = ["default"]
-  }
-}
-
 # Create an EKS cluster
 resource "aws_eks_cluster" "eks" {
   name     = var.app_name
@@ -14,8 +5,11 @@ resource "aws_eks_cluster" "eks" {
   version  = var.kubernetes_version
 
   vpc_config {
-    subnet_ids         = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
-    security_group_ids = [data.aws_security_group.default.id]
+    subnet_ids = [
+      aws_subnet.public_subnet_1.id,
+      aws_subnet.public_subnet_2.id
+    ]
+    security_group_ids = [aws_security_group.eks_cluster_sg.id]
   }
 
   depends_on = [
@@ -24,12 +18,65 @@ resource "aws_eks_cluster" "eks" {
   ]
 }
 
+# Security Group for EKS Cluster Control Plane
+resource "aws_security_group" "eks_cluster_sg" {
+  vpc_id = aws_vpc.vpc.id
+
+  # Allow all inbound traffic to the EKS Control Plane
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # Allow all protocols
+    cidr_blocks = ["0.0.0.0/0"]  # Adjust for more specific CIDR ranges if needed
+  }
+
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.app_name}-eks-cluster-sg"
+  }
+}
+
+# Security Group for EKS Nodes
+resource "aws_security_group" "eks_node_sg" {
+  vpc_id = aws_vpc.vpc.id
+
+  # Allow all inbound traffic to EKS Nodes
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # Allow all protocols
+    cidr_blocks = ["0.0.0.0/0"]  # Adjust for more specific CIDR ranges if needed
+  }
+
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.app_name}-eks-node-sg"
+  }
+}
+
 # Create a managed node group with a single node
 resource "aws_eks_node_group" "node_group" {
   cluster_name    = aws_eks_cluster.eks.name
   node_group_name = "${var.app_name}-node-group"
   node_role_arn   = aws_iam_role.eks_node_group_role.arn
-  subnet_ids      = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
+  subnet_ids      = [
+    aws_subnet.public_subnet_1.id,
+    aws_subnet.public_subnet_2.id
+  ]
 
   scaling_config {
     desired_size = 1  # Number of nodes to provision
@@ -37,11 +84,9 @@ resource "aws_eks_node_group" "node_group" {
     max_size     = 1  # Maximum number of nodes
   }
 
-  instance_types = ["t3.medium"] 
-  capacity_type  = "SPOT"
-  
-  # Automatically attach the primary security group of the cluster
-  attach_cluster_primary_security_group = true
+  instance_types = ["t3a.micro"]  # Change to your preferred instance type
+
+  # No remote access required for the node group
 
   depends_on = [
     aws_eks_cluster.eks,
