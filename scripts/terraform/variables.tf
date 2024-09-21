@@ -1,5 +1,3 @@
-# variables.tf
-
 variable "app_name" {
   default = "s224169428"
 }
