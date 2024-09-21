@@ -1,43 +1,47 @@
-variable "app_name" {
-  default = "s224169428"
+# outputs.tf
+
+# Output the EKS Cluster Name from the module
+output "eks_cluster_name" {
+  value = module.eks.cluster_id
+  description = "The name of the EKS cluster"
 }
 
-variable "container_registry" {
-  default = "s224169428kube"
+# Output the role ARNs for easy reference
+output "eks_cluster_role_arn" {
+  value = aws_iam_role.eks_cluster_role.arn
+  description = "The ARN of the IAM role for the EKS cluster"
 }
 
-variable "aws_region" {
-  default = "us-east-1"
+output "eks_node_group_role_arn" {
+  value = aws_iam_role.eks_node_group_role.arn
+  description = "The ARN of the IAM role for the EKS node group"
 }
 
-variable "kubernetes_version" { 
-  default = "1.24"   
+# Output the repository URLs for ECR
+output "book_catalog_repository_url" {
+  value       = aws_ecr_repository.book_catalog.repository_url
+  description = "The URL of the book_catalog ECR repository"
 }
 
-variable "azs" {
-  description = "List of public subnet CIDR blocks"
-  default     = ["us-east-1a", "us-east-1b"]
+output "inventory_management_repository_url" {
+  value       = aws_ecr_repository.inventory_management.repository_url
+  description = "The URL of the inventory_management ECR repository"
 }
 
-variable "aws_availability_zone_1" {
-  default = "us-east-1a"  # Replace with your preferred AZ
+# Output the VPC ID
+output "vpc_id" {
+  value = module.vpc.vpc_id
+  description = "The ID of the VPC"
 }
 
-variable "aws_availability_zone_2" {
-  default = "us-east-1b"  # Replace with your preferred AZ
+# Output the Public Subnets IDs
+output "public_subnets" {
+  value = module.vpc.public_subnets
+  description = "The IDs of the public subnets"
 }
 
-variable "public_subnets" {
-  description = "List of public subnet CIDR blocks"
-  default     = ["10.123.1.0/24", "10.123.2.0/24"]
-}
-
-variable "private_subnets" {
-  description = "List of private subnet CIDR blocks"
-  default     = ["10.123.3.0/24", "10.123.4.0/24"]
-}
-
-variable "vpc_cidr" {
-  description = "CIDR blocks"
-  default     = "10.123.0.0/16"
+# Output the Private Subnets IDs
+output "private_subnets" {
+  value = module.vpc.private_subnets
+  description = "The IDs of the private subnets"
 }
