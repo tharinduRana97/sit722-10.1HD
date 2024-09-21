@@ -1,9 +1,3 @@
-# Define the ECR repository name as a variable
-variable "container_registry" {
-  description = "The name of the ECR repository."
-  type        = string
-}
-
 # Lookup the existing ECR repository
 data "aws_ecr_repository" "existing" {
   name = var.container_registry
