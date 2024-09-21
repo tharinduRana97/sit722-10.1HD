@@ -39,6 +39,13 @@ jobs:
           ECR_REPOSITORY_URL=$(aws secretsmanager get-secret-value --secret-id CONTAINER_REGISTRY --query 'SecretString' --output text)
           echo "CONTAINER_REGISTRY=$ECR_REPOSITORY_URL" >> $GITHUB_ENV
 
+    - name: Retrieve ECR Repository URL from AWS Secrets Manager
+      id: fetch-ecr-url
+      run: |
+        ECR_REPOSITORY_URL=$(aws secretsmanager get-secret-value --secret-id CONTAINER_REGISTRY --query 'SecretString' --output text)
+        echo "CONTAINER_REGISTRY=$ECR_REPOSITORY_URL" >> $GITHUB_ENV
+        echo "Retrieved ECR Repository URL: $ECR_REPOSITORY_URL"
+
       # Build the Docker image
       - name: Build Docker Image
         run: ./scripts/build-image.sh
