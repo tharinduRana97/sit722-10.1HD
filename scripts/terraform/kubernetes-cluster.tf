@@ -43,5 +43,5 @@ module "eks" {
         ExtraTag = "helloworld"
       }
     }
-  }
+  tags = var.tags 
 }
