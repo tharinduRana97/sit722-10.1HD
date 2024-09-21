@@ -32,11 +32,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1 # Change this to your desired AWS region
 
-      # Fetch Container Registry URL from AWS Secrets Manager
       - name: Retrieve ECR Repository URL from AWS Secrets Manager
         id: fetch-ecr-url
         run: |
-          ECR_REPOSITORY_URL=$(aws secretsmanager get-secret-value --secret-id CONTAINER_REGISTRY --query 'SecretString' --output text)
+          ECR_REPOSITORY_URL=$(aws secretsmanager get-secret-value --secret-id CONTAINER_REGISTRY --query 'SecretString' --output text | jq -r '.CONTAINER_REGISTRY')
           echo "CONTAINER_REGISTRY=$ECR_REPOSITORY_URL" >> $GITHUB_ENV
           echo "Retrieved ECR Repository URL: $ECR_REPOSITORY_URL"
 
