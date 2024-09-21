@@ -5,7 +5,7 @@ data "aws_ecr_repository" "existing" {
 
 # Determine whether the ECR repository needs to be created
 locals {
-  ecr_repository_exists = length(try(data.aws_ecr_repository.existing.repository_uri, [])) > 0
+  ecr_repository_exists = length(try([data.aws_ecr_repository.existing.repository_url], [])) > 0
 }
 
 # Create ECR repository only if it doesn't exist
@@ -18,7 +18,7 @@ resource "aws_ecr_repository" "ecr" {
   }
 }
 
-# Output the ECR repository URI, whether it is newly created or already existing
+# Output the ECR repository URL, whether it is newly created or already existing
 output "ecr_repository_uri" {
-  value = local.ecr_repository_exists ? data.aws_ecr_repository.existing.repository_uri : aws_ecr_repository.ecr[0].repository_url
+  value = local.ecr_repository_exists ? data.aws_ecr_repository.existing.repository_url : aws_ecr_repository.ecr[0].repository_url
 }
