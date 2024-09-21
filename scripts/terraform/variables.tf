@@ -32,6 +32,11 @@ variable "public_subnets" {
   default     = ["10.123.1.0/24", "10.123.2.0/24"]
 }
 
+variable "intra_subnets" {
+  description = "List of private subnet CIDR blocks"
+  default     = ["10.123.5.0/24", "10.123.6.0/24"]
+}
+
 variable "private_subnets" {
   description = "List of private subnet CIDR blocks"
   default     = ["10.123.3.0/24", "10.123.4.0/24"]

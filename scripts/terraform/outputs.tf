@@ -45,3 +45,9 @@ output "private_subnets" {
   value = module.vpc.private_subnets
   description = "The IDs of the private subnets"
 }
+
+# Output the Intra Subnets IDs
+output "private_subnets" {
+  value = module.vpc.intra_subnets
+  description = "The IDs of the intra subnets"
+}
