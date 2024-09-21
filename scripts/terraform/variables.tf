@@ -21,3 +21,13 @@ variable "aws_availability_zone_1" {
 variable "aws_availability_zone_2" {
   default = "us-east-1b"  # Replace with your preferred AZ
 }
+
+variable "public_subnets" {
+  description = "List of public subnet CIDR blocks"
+  default     = ["10.123.1.0/24", "10.123.2.0/24"]
+}
+
+variable "private_subnets" {
+  description = "List of private subnet CIDR blocks"
+  default     = ["10.123.3.0/24", "10.123.4.0/24"]
+}
