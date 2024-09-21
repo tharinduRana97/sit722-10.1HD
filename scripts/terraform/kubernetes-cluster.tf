@@ -9,6 +9,7 @@ resource "aws_eks_cluster" "eks" {
       aws_subnet.public_subnet_1.id,
       aws_subnet.public_subnet_2.id
     ]
+    security_group_ids = [aws_security_group.eks_cluster_sg.id]
   }
 
   depends_on = [
@@ -17,23 +18,48 @@ resource "aws_eks_cluster" "eks" {
   ]
 }
 
-# Security Group for EKS Nodes
-resource "aws_security_group" "eks_node_sg" {
-  vpc_id = aws_vpc.main.id
+# Security Group for EKS Cluster Control Plane
+resource "aws_security_group" "eks_cluster_sg" {
+  vpc_id = aws_vpc.vpc.id
 
-  # Allow inbound traffic from EKS Control Plane (443) and between nodes (10250)
+  # Allow inbound traffic from EKS Control Plane
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [aws_eks_cluster.eks.cluster_security_group_id]
+    cidr_blocks = ["0.0.0.0/0"]  # Adjust for more specific CIDR ranges if needed
+  }
+
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.app_name}-eks-cluster-sg"
+  }
+}
+
+# Security Group for EKS Nodes
+resource "aws_security_group" "eks_node_sg" {
+  vpc_id = aws_vpc.vpc.id
+
+  # Allow inbound traffic from EKS Control Plane and other nodes
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Adjust for more specific CIDR ranges if needed
   }
 
   ingress {
     from_port   = 10250
     to_port     = 10250
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Adjust as needed for security
+    cidr_blocks = ["0.0.0.0/0"]  # Adjust for more specific CIDR ranges if needed
   }
 
   # Allow all outbound traffic
@@ -54,7 +80,10 @@ resource "aws_eks_node_group" "node_group" {
   cluster_name    = aws_eks_cluster.eks.name
   node_group_name = "${var.app_name}-node-group"
   node_role_arn   = aws_iam_role.eks_node_group_role.arn
-  subnet_ids      = aws_eks_cluster.eks.vpc_config[0].subnet_ids
+  subnet_ids      = [
+    aws_subnet.public_subnet_1.id,
+    aws_subnet.public_subnet_2.id
+  ]
 
   scaling_config {
     desired_size = 1  # Number of nodes to provision
@@ -63,6 +92,12 @@ resource "aws_eks_node_group" "node_group" {
   }
 
   instance_types = ["t3a.micro"]  # Change to your preferred instance type
+
+  # Attach the security group created for the nodes
+  remote_access {
+    ec2_ssh_key = var.ec2_ssh_key
+    source_security_group_ids = [aws_security_group.eks_node_sg.id]
+  }
 
   depends_on = [
     aws_eks_cluster.eks,
