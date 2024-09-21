@@ -5,6 +5,9 @@ module "eks" {
   cluster_name                   = var.app_name
   cluster_endpoint_public_access = true
 
+  # Disable KMS encryption by not configuring KMS-related parameters
+  encryption_config = null
+
   cluster_addons = {
     coredns = {
       most_recent = true
@@ -17,16 +20,13 @@ module "eks" {
     }
   }
 
-  # Reference VPC outputs correctly
   vpc_id                   = module.vpc.vpc_id
-  subnet_ids               = module.vpc.public_subnets  
-  control_plane_subnet_ids = module.vpc.public_subnets  
+  subnet_ids               = module.vpc.public_subnets
+  control_plane_subnet_ids = module.vpc.public_subnets
 
-  # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
     instance_types = ["t3.large"]
-
     attach_cluster_primary_security_group = true
   }
 
@@ -35,13 +35,13 @@ module "eks" {
       min_size     = 1
       max_size     = 1
       desired_size = 1
-
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
-
       tags = {
         ExtraTag = "helloworld"
       }
     }
+  }
+
   tags = var.tags 
 }
