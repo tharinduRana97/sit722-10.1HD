@@ -45,5 +45,4 @@ module "eks" {
     }
   }
 
-  tags = var.app_name  # Corrected reference to tags
-}
+  tags = var.tags 
