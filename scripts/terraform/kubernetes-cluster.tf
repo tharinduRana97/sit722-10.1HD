@@ -8,11 +8,6 @@ module "eks" {
   # Disable KMS encryption by not configuring KMS-related parameters
   create_kms_key = false
 
-  cluster_encryption_config = (var.kms_key_arn != null ? {
-      provider_key_arn = var.kms_key_arn
-      resources        = ["secrets"]
-    } : null)
-
   cluster_addons = {
     coredns = {
       most_recent = true
