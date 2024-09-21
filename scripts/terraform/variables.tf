@@ -36,7 +36,8 @@ variable "private_subnets" {
   description = "List of private subnet CIDR blocks"
   default     = ["10.123.3.0/24", "10.123.4.0/24"]
 }
+
 variable "vpc_cidr" {
   description = "CIDR blocks"
-  default     = "10.123.0.0/16"]
+  default     = "10.123.0.0/16"
 }
