@@ -1,5 +1,3 @@
-# iam.tf
-
 # IAM role for the EKS Cluster
 resource "aws_iam_role" "eks_cluster_role" {
   name               = "${var.app_name}-eks-cluster-role"
@@ -32,10 +30,9 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_AmazonEKSVPCResourceContr
   role       = aws_iam_role.eks_cluster_role.name
 }
 
-
-
 # IAM Role for the EKS Node Group
-resource "aws_iam_role" "eks_node_group_role" {  name               = "${var.app_name}-node-group-role"
+resource "aws_iam_role" "eks_node_group_role" {
+  name               = "${var.app_name}-node-group-role"
   assume_role_policy = data.aws_iam_policy_document.eks_node_assume_role_policy.json
 
   tags = {
@@ -76,17 +73,3 @@ resource "aws_iam_role_policy_attachment" "eks_node_CloudWatchAgentServerPolicy"
   role       = aws_iam_role.eks_node_group_role.name
 }
 
-# Optional: Add any additional policies needed for the EKS node group role here
-# resource "aws_iam_role_policy_attachment" "additional_node_policy" {
-#   policy_arn = "arn:aws:iam::aws:policy/YourAdditionalPolicy"
-#   role       = aws_iam_role.eks_node_group_role.name
-# }
-
-# Output the role ARNs for easy reference
-output "eks_cluster_role_arn" {
-  value = aws_iam_role.eks_cluster_role.arn
-}
-
-output "eks_node_group_role_arn" {
-  value = aws_iam_role.eks_node_group_role.arn
-}

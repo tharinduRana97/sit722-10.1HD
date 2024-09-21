@@ -18,3 +18,12 @@ output "inventory_management_repository_url" {
 output "vpc_id" {
   value = aws_vpc.vpc.id
 }
+
+# Output the role ARNs for easy reference
+output "eks_cluster_role_arn" {
+  value = aws_iam_role.eks_cluster_role.arn
+}
+
+output "eks_node_group_role_arn" {
+  value = aws_iam_role.eks_node_group_role.arn
+}
