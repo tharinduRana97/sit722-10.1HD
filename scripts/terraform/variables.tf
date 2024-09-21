@@ -41,12 +41,3 @@ variable "vpc_cidr" {
   description = "CIDR blocks"
   default     = "10.123.0.0/16"
 }
-
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-  default = {
-    "Environment" = "dev"
-    "Project"     = "s224169428"
-  }
-}
