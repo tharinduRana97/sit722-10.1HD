@@ -6,7 +6,7 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   # Disable KMS encryption by not configuring KMS-related parameters
-  encryption_config = null
+  create_kms_key = false
 
   cluster_addons = {
     coredns = {
