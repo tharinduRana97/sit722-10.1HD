@@ -1,25 +1,14 @@
-#
-# GitHub Actions workflow.
-#
-# Automatically deploys the Node.js microservice to Kubernetes on push to the main branch.
-# For real use you might want to restrict this to the "prod" branch.
-#
-
 name: Deploy book catalog
 
 on:
-  #
-  # Deploy the microservice on push to any branch of this code repository.
-  #
+  # Deploy the microservice on push to the main branch of this code repository.
   push:
     branches:
       - main
     paths:
       - book_catalog/**
 
-  #
   # Allows deployment to be invoked manually through the GitHub Actions user interface.
-  #
   workflow_dispatch:
 
 jobs:
@@ -28,40 +17,48 @@ jobs:
 
     env:
       VERSION: ${{ github.sha }}
-      CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
-      REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
-      REGISTRY_PW: ${{ secrets.REGISTRY_PW  }}
       NAME: book_catalog
       DIRECTORY: book_catalog
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE.
+      # Checkout the repository
       - uses: actions/checkout@v3
 
-      #
-      # Builds the Docker image.
-      #
-      - name: Build
+      # Configure AWS Credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Change this to your desired AWS region
+
+      # Fetch Container Registry URL from AWS Secrets Manager
+      - name: Retrieve ECR Repository URL from AWS Secrets Manager
+        id: fetch-ecr-url
+        run: |
+          ECR_REPOSITORY_URL=$(aws secretsmanager get-secret-value --secret-id <SECRET_NAME> --query 'SecretString' --output text | jq -r '.CONTAINER_REGISTRY')
+          echo "CONTAINER_REGISTRY=$ECR_REPOSITORY_URL" >> $GITHUB_ENV
+
+      # Build the Docker image
+      - name: Build Docker Image
         run: ./scripts/build-image.sh
 
-      #
-      # Publishes the Docker image to the container registry.
-      #
-      - name: Publish
+      # Tag and Push the Docker image to Amazon ECR
+      - name: Push Docker Image to Amazon ECR
         run: ./scripts/push-image.sh
 
-      #
-      # Installs Kubectl and connects it to the cluster.
-      #
-      # https://github.com/marketplace/actions/kubernetes-cli-kubectl
-      #
-      - uses: tale/kubectl-action@v1
-        with:
-          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
-          kubectl-version: v1.24.2
+      # Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/v1.24.2/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
 
-      #
-      # Expands the configuration template and deploys the microservice.
-      #
-      - name: Deploy
+      # Configure kubectl to connect to the EKS cluster
+      - name: Configure kubectl for Amazon EKS
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name s224169428
+
+      # Deploy to Amazon EKS
+      - name: Deploy to Amazon EKS
         run: ./scripts/deploy.sh
