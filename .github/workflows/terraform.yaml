@@ -26,10 +26,10 @@ jobs:
         with:
           terraform_wrapper: false
 
-      # Give execute permission to the infrastructure script
-      - name: Grant execute permission to infrastructure script
+      # Give execute permission to the terraform script
+      - name: Grant execute permission to terraform script
         run: chmod +x ./scripts/terraform.sh
 
-      # Deploy infrastructure using the script
-      - name: Deploy Infrastructure
+      # Deploy terraform using the script
+      - name: Deploy Terraform
         run: ./scripts/terraform.sh
