@@ -19,7 +19,7 @@ jobs:
 
     env:
       VERSION: ${{ github.sha }}
-      NAME: video-storage
+      NAME: mock-storage
       DIRECTORY: mock-storage
 
     steps:
