@@ -20,11 +20,11 @@ variable "azs" {
 }
 
 variable "aws_availability_zone_1" {
-  default = "us-east-1a"  # Replace with your preferred AZ
+  default = "us-east-1a" 
 }
 
 variable "aws_availability_zone_2" {
-  default = "us-east-1b"  # Replace with your preferred AZ
+  default = "us-east-1b"  
 }
 
 variable "public_subnets" {
