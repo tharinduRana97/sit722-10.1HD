@@ -19,8 +19,8 @@ jobs:
 
     env:
       VERSION: ${{ github.sha }}
-      NAME: video-upload
-      DIRECTORY: video-upload
+      NAME: video-streaming
+      DIRECTORY: video-streaming
 
     steps:
       # Checkout the repository

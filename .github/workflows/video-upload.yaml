@@ -19,8 +19,8 @@ jobs:
 
     env:
       VERSION: ${{ github.sha }}
-      NAME: history
-      DIRECTORY: history
+      NAME: video-upload
+      DIRECTORY: video-upload
 
     steps:
       # Checkout the repository

@@ -19,8 +19,8 @@ jobs:
 
     env:
       VERSION: ${{ github.sha }}
-      NAME: history
-      DIRECTORY: history
+      NAME: metadata
+      DIRECTORY: metadata
 
     steps:
       # Checkout the repository
