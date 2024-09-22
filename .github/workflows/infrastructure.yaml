@@ -32,9 +32,19 @@ jobs:
       #
       # https://github.com/marketplace/actions/kubernetes-cli-kubectl
       #
-      - uses: tale/kubectl-action@v1
+       # Retrieve KUBE_CONFIG from AWS Secrets Manager
+      - name: Retrieve base64-encoded KUBE_CONFIG from AWS Secrets Manager
+        id: fetch-kube-config
+        run: |
+          BASE64_KUBE_CONFIG=$(aws secretsmanager get-secret-value --secret-id YOUR_SECRET_ID --query 'SecretString' --output text | jq -r '.KUBE_CONFIG')
+          echo "KUBE_CONFIG=$BASE64_KUBE_CONFIG" >> $GITHUB_ENV
+          echo "Retrieved base64-encoded KUBE_CONFIG successfully."
+
+      # Use the kubectl action with the base64-encoded KUBE_CONFIG
+      - name: Kubectl Action
+        uses: tale/kubectl-action@v1
         with:
-          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+          base64-kube-config: ${{ env.KUBE_CONFIG }}
           kubectl-version: v1.24.2
 
       #
