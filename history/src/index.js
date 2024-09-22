@@ -6,6 +6,7 @@ if (!process.env.PORT) {
     throw new Error("Please specify the port number for the HTTP server with the environment variable PORT.");
 }
 
+
 if (!process.env.DBHOST) {
     throw new Error("Please specify the database host using environment variable DBHOST.");
 }
