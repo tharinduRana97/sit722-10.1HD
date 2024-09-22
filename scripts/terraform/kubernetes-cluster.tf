@@ -14,6 +14,8 @@ module "eks" {
     instance_types = ["t3.large"]
     attach_cluster_primary_security_group = true
   }
+  cluster_iam_role_name          = aws_iam_role.eks_cluster_role.name
+  node_group_iam_role_name       = aws_iam_role.eks_node_group_role.name
 
   eks_managed_node_groups = {
     amc-cluster-wg = {
