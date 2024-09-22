@@ -51,17 +51,6 @@ data "aws_iam_policy_document" "eks_node_assume_role_policy" {
   }
 }
 
- IAM user for GitHub Actions
-resource "aws_iam_user" "github_action_user" {
-  name = "github-action-user"
-}
-
-# Attach the AmazonEKSClusterAdminPolicy to the IAM user
-resource "aws_iam_user_policy_attachment" "github_action_user_policy_attachment" {
-  user       = aws_iam_user.github_action_user.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterAdminPolicy"
-}
-
 # Attach the required policies to the EKS Node Group Role
 resource "aws_iam_role_policy_attachment" "eks_node_AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
