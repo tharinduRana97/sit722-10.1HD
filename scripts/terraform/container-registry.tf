@@ -63,7 +63,7 @@ resource "aws_ecr_repository" "video-upload" {
 }
 
 # Create ECR repository for video-storage
-resource "aws_ecr_repository" "video-storage" {
+resource "aws_ecr_repository" "mock-storage" {
   name                 = "${var.container_registry}-video-storage"
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
@@ -71,6 +71,6 @@ resource "aws_ecr_repository" "video-storage" {
   }
 
   tags = {
-    Name = "${var.container_registry}-video-storage"
+    Name = "${var.container_registry}-mock-storage"
   }
 }
