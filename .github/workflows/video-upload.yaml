@@ -1,0 +1,66 @@
+name: Deploy video-upload
+
+on:
+  #
+  # Deploys the microservice on push to the specified subdirectory in the main branch of this code repository.
+  #
+  push:
+    branches:
+      - main
+    paths:
+      - video-upload/**
+
+  # Allows deployment to be invoked manually through the GitHub Actions user interface.
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      VERSION: ${{ github.sha }}
+      NAME: history
+      DIRECTORY: history
+
+    steps:
+      # Checkout the repository
+      - uses: actions/checkout@v3
+
+      # Configure AWS Credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Change this to your desired AWS region
+
+      - name: Retrieve ECR Repository URL from AWS Secrets Manager
+        id: fetch-ecr-url
+        run: |
+          ECR_REPOSITORY_URL=$(aws secretsmanager get-secret-value --secret-id CONTAINER_REGISTRY --query 'SecretString' --output text | jq -r '.CONTAINER_REGISTRY')
+          echo "CONTAINER_REGISTRY=$ECR_REPOSITORY_URL" >> $GITHUB_ENV
+          echo "Retrieved ECR Repository URL: $ECR_REPOSITORY_URL"
+
+      # Build the Docker image
+      - name: Build Docker Image
+        run: ./scripts/build-image.sh
+
+      # Tag and Push the Docker image to Amazon ECR
+      - name: Push Docker Image to Amazon ECR
+        run: ./scripts/push-image.sh
+
+      # Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/v1.24.2/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+
+      # Configure kubectl to connect to the EKS cluster
+      - name: Configure kubectl for Amazon EKS
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name s224169428
+
+      # Deploy to Amazon EKS
+      - name: Deploy to Amazon EKS
+        run: ./scripts/deploy.sh
