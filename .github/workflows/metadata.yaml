@@ -53,7 +53,7 @@ jobs:
       - name: Retrieve base64-encoded KUBE_CONFIG from AWS Secrets Manager
         id: fetch-kube-config
         run: |
-          BASE64_KUBE_CONFIG=$(aws secretsmanager get-secret-value --secret-id KUBE_CONFIG --query 'SecretString' --output text | jq -r '.KUBE_CONFIG')
+          BASE64_KUBE_CONFIG=$(aws secretsmanager get-secret-value --secret-id @kubeconfig --query 'SecretString' --output text | jq -r '.KUBE_CONFIG')
           echo "KUBE_CONFIG=$BASE64_KUBE_CONFIG" >> $GITHUB_ENV
           echo "Retrieved base64-encoded KUBE_CONFIG successfully."
 
