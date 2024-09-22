@@ -11,7 +11,7 @@ FULL_REPOSITORY_URL="$CONTAINER_REGISTRY-$NAME"
 FULL_IMAGE_TAG="$FULL_REPOSITORY_URL:$VERSION"
 
 # Build and tag the Docker image directly with the full image tag
-docker build -t $FULL_IMAGE_TAG --file ./$DIRECTORY/Dockerfile ./$DIRECTORY
+docker build -t $FULL_IMAGE_TAG --file ./$DIRECTORY/Dockerfile-prod ./$DIRECTORY
 
 # Output the full image tag for reference or use in other scripts
 echo "Image built and tagged as: $FULL_IMAGE_TAG"
