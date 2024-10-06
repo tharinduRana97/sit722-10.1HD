@@ -64,11 +64,6 @@ jobs:
           base64-kube-config: ${{ env.KUBE_CONFIG }}
           kubectl-version: v1.24.2
 
-      # Configure kubectl to connect to the EKS cluster
-      - name: Configure kubectl for Amazon EKS
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name s224169428
-
       # Deploy to Amazon EKS
       - name: Deploy to Amazon EKS
         run: ./scripts/deploy.sh

@@ -6,7 +6,7 @@ The chapter 10 code repository contains the complete working example application
 
 You need Docker and Docker-Compose installed to run this.
 
-Boot FlixTube from your terminal like this:
+Boot FlixTube from your terminal like this
 
 ```bash
 docker-compose up --build
